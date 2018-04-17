@@ -3,7 +3,6 @@ package cn.gyyx.sentinel.app.attestation;
 import cn.gyyx.sentinel.app.domain.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.HashMap;

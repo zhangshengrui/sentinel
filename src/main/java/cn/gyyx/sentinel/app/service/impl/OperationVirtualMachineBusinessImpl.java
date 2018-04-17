@@ -7,7 +7,6 @@ import cn.gyyx.sentinel.app.domain.Result;
 import cn.gyyx.sentinel.app.service.OperationVirtualMachineBusiness;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +24,12 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
     @Override
     public Result createVirtualMachine(String uri) {
         Result result =  AttestationFilter.attestation(uri);
-        //if(result.getCode() != 200.0){
-        //    return result;
-        //}
+        if(result.getCode() != 200.0){
+            return result;
+        }
         try {
             Map<String,String> map = (Map<String, String>) result.getData();
-            //String authId = map.get("authId");
-            String authId = "111";
+            String authId = map.get("authId");
             if(StringUtils.isBlank(authId)){
                 result.setCode(401.0);
                 result.setMsg("params authId get authid fail");
