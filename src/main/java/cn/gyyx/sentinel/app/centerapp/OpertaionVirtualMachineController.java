@@ -23,6 +23,6 @@ public class OpertaionVirtualMachineController {
                 + request.getContextPath() //应用名称，如果应用名称为
                 + request.getServletPath() //请求的相对url
                 + "?" + request.getQueryString();
-        return operationVirtualMachineBusinessImpl.createVirtualMachine(requestUrl);
+        return operationVirtualMachineBusinessImpl.createVirtualMachine(requestUrl,request.getServletPath());
     }
 }

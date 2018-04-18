@@ -3,7 +3,7 @@
 <mapper namespace="cn.gyyx.sentinel.app.mapper.OperationVirtualMachineMapper">
     <select id="queryAuthInfo" parameterType="cn.gyyx.sentinel.app.domain.Attestation" resultType="cn.gyyx.sentinel.app.domain.Attestation">
         SELECT id, app, auth_id ,auth_key FROM attestation WHERE 1=1
-        <if test="id != '' ">
+        <if test="id != '' and id != null">
             <![CDATA[
               AND id=#{id}
             ]]>
