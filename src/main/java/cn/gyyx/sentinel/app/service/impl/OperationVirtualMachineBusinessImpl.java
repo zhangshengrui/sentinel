@@ -56,6 +56,17 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
                 result.setMsg("authId permission denied");
                 return result;
             }
+            if(list.size() != 1){
+                result.setCode(401.6);
+                result.setMsg("authId recognizable");
+                return result;
+            }
+            String sign = AttestationFilter.md5Encode(map,list.get(0).getAuthKey());
+            if(!sign.equals(map.get("sign"))){
+                result.setCode(401.5);
+                result.setMsg("sign error");
+                return result;
+            }
             result.setCode(400.0);
             result.setMsg("success");
             return result;

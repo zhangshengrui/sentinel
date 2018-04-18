@@ -1,12 +1,12 @@
 package cn.gyyx.sentinel.app.attestation;
 
 import cn.gyyx.sentinel.app.domain.Result;
+import cn.gyyx.sentinel.app.utils.MD5Utils;
+import cn.gyyx.sentinel.app.utils.ParamsMapSortUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AttestationFilter {
 
@@ -61,7 +61,7 @@ public class AttestationFilter {
             }
             try {
                 Long time = Long.parseLong(params.get("timestamp"));
-                if(time < System.currentTimeMillis() - 1000 * 60 * 5 || time > System.currentTimeMillis() + 1000 * 60 * 5){
+                if(time < System.currentTimeMillis()/1000  - 60 * 5 || time > System.currentTimeMillis() /1000 +  60 * 5){
                     result.setCode(401.7);
                     result.setMsg("sign timeout");
                     return result;
@@ -90,14 +90,6 @@ public class AttestationFilter {
                 result.setCode(401.4);
                 result.setMsg("sign length is illegal");
                 return result;
-            }else{
-                //todo:MD5校验
-                String xxx = "11";
-                if(xxx.equals(params.get("sign"))){
-                    result.setCode(401.5);
-                    result.setMsg("sign error");
-                    return result;
-                }
             }
             result.setCode(200.0);
             result.setMsg("params is ok");
@@ -111,13 +103,52 @@ public class AttestationFilter {
         }
 
     }
+    public static String md5Encode(Map<String,String>params,String authKey){
+        if(params.size() == 0 ){
+            return "____";
+        }
+        try {
+            Map<String,String> map = ParamsMapSortUtils.sortMapByKey(params);
+            StringBuffer stringBuffer = new StringBuffer();
+            Set<String> keySet = map.keySet();
+            Iterator<String> iter = keySet.iterator();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                if(key != "sign"){
+                    stringBuffer.append(key+"="+map.get(key)+"&");
+                }
+            }
+            stringBuffer.append(authKey);
+            return MD5Utils.MD5(stringBuffer.toString());
+        }catch (Exception e){
+            logger.error("md4encode map error");
+            logger.error(e);
+            return "___";
+        }
+    }
 
     public static void main(String[] args) {
-        String uri  = "http://host:port/foo/bar?key2=value2&key1=value1&auth_id=x&timestamp=1234567890&sign_type=MD5&sign=fb316e29172065a840090ddc759f4dff";
-        String params []= uri.substring(uri.indexOf("?")+1).split("&");
         Map<String,String> map = new HashMap<>();
-        String aa= "key2=";
-        System.out.println(new Date(1523957372927l));
-        System.out.println(System.currentTimeMillis());
+        map.put("1111","2222");
+        map.put("1111","2222");
+        map.put("aa","2222");
+        map.put("a","2222");
+        map.put("吃","2222");
+        map.put("在在","2222");
+        StringBuffer stringBuffer =new StringBuffer();
+        Map<String,String> map2 = ParamsMapSortUtils.sortMapByKey(map);
+        Set<String> keySet = map2.keySet();
+        Iterator<String> iter = keySet.iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            if(key != "sign"){
+                stringBuffer.append("DAV8NNXIGTAA2WYB");
+            }
+        }
+        System.out.println(stringBuffer);
+        System.out.println(stringBuffer.deleteCharAt(stringBuffer.length()-1));
     }
+
+
+
 }
