@@ -1,6 +1,8 @@
 package cn.gyyx.sentinel.app.domain;
 
-public class Attestation {
+import java.io.Serializable;
+
+public class Attestation  implements Serializable{
     private Integer id;
     private String app;
     private String auth_id;

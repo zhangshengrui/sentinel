@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -26,36 +27,23 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
     private OperationDBMapper operationDBMapper;
 
     @Override
+    @Transactional
     public Result createVirtualMachine(String uri,String path) {
-        //operationDBMapper.addTest("111");
-
         Result result =  AttestationFilter.attestation(uri);
         if(!result.getCode().equals("200.0")){
             return result;
         }
         try {
             Map<String,String> map = (Map<String, String>) result.getData();
-            String authId = map.get("auth_id");
-            if(StringUtils.isBlank(authId)){
-                result.setCode("401.0");
-                result.setMsg("params authId get authid fail");
-                return result;
-            }
             Attestation attestation = new Attestation();
-            attestation.setAuth_id(authId);
+            attestation.setAuth_id(map.get("auth_id"));
             List<Attestation> list = operationVirtualMachineMapper.queryAuthInfo(attestation);
             if(list.size() == 0){
                 result.setCode("401.2");
                 result.setMsg("authId is illegal");
                 return result;
             }
-            String app = map.get("app");
-            if(StringUtils.isBlank(app)){
-                result.setCode("401.0");
-                result.setMsg("params app get authid fail");
-                return result;
-            }
-            attestation.setApp(app);
+            attestation.setApp(map.get("app"));
             list =operationVirtualMachineMapper.queryAuthInfo(attestation);
             if(list.size() == 0){
                 result.setCode("401.6");
@@ -73,6 +61,8 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
                 result.setMsg("sign error");
                 return result;
             }
+
+            //插入资产信息
             result.setCode("400.0");
             result.setMsg("success");
             return result;
