@@ -1,9 +1,10 @@
 package cn.gyyx.sentinel.app.service.impl;
 
-import cn.gyyx.sentinel.app.mapper.OperationVirtualMachineMapper;
+import cn.gyyx.sentinel.app.mapper.db1.SentinelDBMapper;
 import cn.gyyx.sentinel.app.attestation.AttestationFilter;
 import cn.gyyx.sentinel.app.domain.Attestation;
 import cn.gyyx.sentinel.app.domain.Result;
+import cn.gyyx.sentinel.app.mapper.db2.OperationDBMapper;
 import cn.gyyx.sentinel.app.service.OperationVirtualMachineBusiness;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
@@ -19,10 +20,15 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
     private final static Logger logger  =  Logger.getLogger(OperationVirtualMachineBusinessImpl.class);
 
     @Autowired
-    private OperationVirtualMachineMapper operationVirtualMachineMapper;
+    private SentinelDBMapper operationVirtualMachineMapper;
+
+    @Autowired
+    private OperationDBMapper operationDBMapper;
 
     @Override
     public Result createVirtualMachine(String uri,String path) {
+        operationDBMapper.addTest("111");
+
         Result result =  AttestationFilter.attestation(uri);
         if(!result.getCode().equals("200.0")){
             return result;

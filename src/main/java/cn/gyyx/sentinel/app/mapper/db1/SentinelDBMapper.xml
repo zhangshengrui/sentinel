@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.gyyx.sentinel.app.mapper.OperationVirtualMachineMapper">
+<mapper namespace="cn.gyyx.sentinel.app.mapper.db1.SentinelDBMapper">
     <select id="queryAuthInfo" parameterType="cn.gyyx.sentinel.app.domain.Attestation" resultType="cn.gyyx.sentinel.app.domain.Attestation">
         SELECT id, app, auth_id ,auth_key FROM attestation WHERE 1=1
         <if test="id != '' and id != null">
