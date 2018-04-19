@@ -3,8 +3,8 @@ package cn.gyyx.sentinel.app.domain;
 public class Attestation {
     private Integer id;
     private String app;
-    private String authId;
-    private String authKey;
+    private String auth_id;
+    private String auth_key;
 
     public Integer getId() {
         return id;
@@ -22,19 +22,19 @@ public class Attestation {
         this.app = app;
     }
 
-    public String getAuthId() {
-        return authId;
+    public String getAuth_id() {
+        return auth_id;
     }
 
-    public void setAuthId(String authId) {
-        this.authId = authId;
+    public void setAuth_id(String auth_id) {
+        this.auth_id = auth_id;
     }
 
-    public String getAuthKey() {
-        return authKey;
+    public String getAuth_key() {
+        return auth_key;
     }
 
-    public void setAuthKey(String authKey) {
-        this.authKey = authKey;
+    public void setAuth_key(String auth_key) {
+        this.auth_key = auth_key;
     }
 }

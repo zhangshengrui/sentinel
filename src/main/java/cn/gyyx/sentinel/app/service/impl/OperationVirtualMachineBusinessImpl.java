@@ -27,7 +27,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
 
     @Override
     public Result createVirtualMachine(String uri,String path) {
-        operationDBMapper.addTest("111");
+        //operationDBMapper.addTest("111");
 
         Result result =  AttestationFilter.attestation(uri);
         if(!result.getCode().equals("200.0")){
@@ -42,7 +42,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
                 return result;
             }
             Attestation attestation = new Attestation();
-            attestation.setAuthId(authId);
+            attestation.setAuth_id(authId);
             List<Attestation> list = operationVirtualMachineMapper.queryAuthInfo(attestation);
             if(list.size() == 0){
                 result.setCode("401.2");
@@ -67,7 +67,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
                 result.setMsg("authId recognizable");
                 return result;
             }
-            String sign = AttestationFilter.md5Encode(map,list.get(0).getAuthKey(),path);
+            String sign = AttestationFilter.md5Encode(map,list.get(0).getAuth_key(),path);
             if(!sign.equals(map.get("sign"))){
                 result.setCode("401.5");
                 result.setMsg("sign error");

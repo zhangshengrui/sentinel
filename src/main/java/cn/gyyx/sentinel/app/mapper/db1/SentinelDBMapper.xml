@@ -13,9 +13,9 @@
               AND app=#{app}
             ]]>
         </if>
-        <if test="authId != '' and authId != null ">
+        <if test="auth_id != '' and auth_id != null ">
             <![CDATA[
-              AND auth_id=#{authId}
+              AND auth_id=#{auth_id}
             ]]>
         </if>
     </select>
