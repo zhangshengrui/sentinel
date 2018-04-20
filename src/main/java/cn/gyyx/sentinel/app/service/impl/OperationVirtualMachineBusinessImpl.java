@@ -38,6 +38,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
         }
         try {
             Map<String,String> map = (Map<String, String>) result.getData();
+            result.setData(null);
             Attestation attestation = new Attestation();
             attestation.setAuth_id(map.get("auth_id"));
             List<Attestation> list = operationVirtualMachineMapper.queryAuthInfo(attestation);
@@ -75,9 +76,18 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
                 return result;
             }
             Assets assets = (Assets)result.getData();
+            result.setData(null);
             if(assets == null){
                 result.setCode("401.0");
                 result.setMsg("the system is broken");
+                return result;
+            }
+
+            //判断当前gysn是否重复
+            List<Assets> assetsList = operationDBMapper.queryAssetsByGysn(assets.getGysn());
+            if(assetsList.size()!=0){
+                result.setCode("403.4");
+                result.setMsg("the gysn is repeated");
                 return result;
             }
             Integer i = operationDBMapper.addVirtualAssets(assets);
@@ -133,15 +143,19 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
                 return result;
             }
             Map<String,String>map = JSON.parseObject(param,new HashMap().getClass());
+            String setting = null;
             for(String s:necessary){
                 if(!map.containsKey(s)){
                     result.setCode("403.3");
                     result.setMsg("necessary param "+s+" is null");
                     return result;
                 }
+                if(s.equals("setting")){
+                    setting = URLDecoder.decode(map.get("setting"),"utf-8");
+                }
             }
             Assets assets= JSON.parseObject(param,Assets.class);
-            assets.setSetting(URLDecoder.decode(map.get("setting"),"utf-8"));
+            assets.setSetting(setting);
             result.setCode("200.0");
             result.setMsg("modal is in data");
             result.setData(assets);
@@ -166,4 +180,74 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
         }
     }
 
+    @Override
+    public Result updateVirtualMachine(String uri, String path) {
+        Result result =  AttestationFilter.attestation(uri);
+        if(!result.getCode().equals("200.0")){
+            return result;
+        }
+        try {
+            Map<String,String> map = (Map<String, String>) result.getData();
+            result.setData(null);
+            Attestation attestation = new Attestation();
+            attestation.setAuth_id(map.get("auth_id"));
+            List<Attestation> list = operationVirtualMachineMapper.queryAuthInfo(attestation);
+            if(list.size() == 0){
+                result.setMsg("authId is illegal");
+                result.setCode("401.2");
+                return result;
+            }
+            attestation.setApp(map.get("app"));
+            list =operationVirtualMachineMapper.queryAuthInfo(attestation);
+            if(list.size() == 0){
+                result.setCode("401.6");
+                result.setMsg("authId permission denied");
+                return result;
+            }
+            if(list.size() != 1){
+                result.setCode("401.6");
+                result.setMsg("authId recognizable");
+                return result;
+            }
+            String sign = AttestationFilter.md5Encode(map,list.get(0).getAuth_key(),path);
+            if(!sign.equals(map.get("sign"))){
+                result.setCode("401.5");
+                result.setMsg("sign error");
+                return result;
+            }
+
+            //检查必要参数
+            List<String> necessary = new ArrayList<>(Arrays.asList("gysn","virtual","ip","ips","flag","app_memo","oper_user","update_date"));
+            necessary.add("id");//编辑时需要id
+            result = checkModel(map.get("param"),necessary);
+
+            //插入资产信息
+            if(!result.getCode().equals("200.0")){
+                return result;
+            }
+            Assets assets = (Assets)result.getData();
+            result.setData(null);
+            if(assets == null){
+                result.setCode("401.0");
+                result.setMsg("the system is broken");
+                return result;
+            }
+            Integer i = operationDBMapper.updateVirtualAssets(assets);
+            if(i <= 0){
+                result.setCode("401.0");
+                result.setMsg("update assets table fail");
+                return result;
+            }
+            result.setCode("200.0");
+            result.setMsg("update virtual success");
+            return result;
+        }catch (Exception e){
+            logger.error("OperationVirtualMachineBusinessImpl is error");
+            logger.error(e);
+            result.setMsg("the system is broken");
+            result.setCode("401.0");
+            result.setData(e);
+            return result;
+        }
+    }
 }
