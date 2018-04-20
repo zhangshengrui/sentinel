@@ -4,7 +4,8 @@
     <insert id="addVirtualAssets" useGeneratedKeys="true" keyProperty="id" parameterType="cn.gyyx.sentinel.app.domain.Assets" >
         INSERT INTO `assets` SET ip =#{ip},ips=#{ips},ipmi_ip=#{ipmi_ip},`name`=#{name},
         gysn=#{gysn},idc_id=#{idc_id},os=#{os},setting=#{setting},flag=#{flag},virtual=#{virtual},
-        manager=#{manager},atype=#{atype},oper_user=#{oper_user},update_date=#{update_date},app_memo=#{app_memo}
+        manager=#{manager},atype=#{atype},oper_user=#{oper_user},update_date=#{update_date},app_memo=#{app_memo},
+        aid=0,rack='',brand='',raid='',power=''
     </insert>
 
     <select id="querySubidAppInfo" parameterType="Integer" resultType="Integer">

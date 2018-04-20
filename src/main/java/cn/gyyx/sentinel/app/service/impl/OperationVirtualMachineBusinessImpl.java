@@ -9,16 +9,13 @@ import cn.gyyx.sentinel.app.domain.Result;
 import cn.gyyx.sentinel.app.mapper.db2.OperationDBMapper;
 import cn.gyyx.sentinel.app.service.OperationVirtualMachineBusiness;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.sun.org.apache.xerces.internal.dom.PSVIDocumentImpl;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Appinfo;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLDecoder;
 import java.util.*;
 
 @Service
@@ -69,7 +66,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             }
 
             //检查必要参数
-            List<String> necessary = Arrays.asList("ip","name","gysn","idc_id","os","setting","flag","virtual","manager","atype","oper_user","update_date");
+            List<String> necessary = new ArrayList<>(Arrays.asList("ip","name","gysn","idc_id","os","setting","flag","virtual","manager","atype","oper_user","update_date"));
             necessary.add("main_id");//新增时需要main_id
             result = checkModel(map.get("param"),necessary);
 
@@ -139,13 +136,21 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             for(String s:necessary){
                 if(!map.containsKey(s)){
                     result.setCode("403.3");
-                    result.setMsg("necessary param "+s+"is null");
+                    result.setMsg("necessary param "+s+" is null");
                     return result;
                 }
             }
             Assets assets= JSON.parseObject(param,Assets.class);
-            result.setMsg("200.0");
+            assets.setSetting(URLDecoder.decode(map.get("setting"),"utf-8"));
+            result.setCode("200.0");
+            result.setMsg("modal is in data");
             result.setData(assets);
+            return result;
+
+        }catch (java.io.UnsupportedEncodingException e2){
+            logger.error("UnsupportedEncodingException");
+            logger.error(e2);
+            result.setMsg("param setting UnsupportedEncodingException");
             return result;
         }catch (com.alibaba.fastjson.JSONException e1){
             logger.error("JSON to Object is fail");
