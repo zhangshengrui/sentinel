@@ -3,29 +3,29 @@ package cn.gyyx.sentinel.app.domain;
 import java.io.Serializable;
 
 public class AppInfo implements Serializable {
-        private String assets_id;
-        private String main_id;
-        private String app_name;
-        private String dist_id;
-        private String sub_id;
-        private String oper_user;
-        private String update_date;
-        private String ip;
-        private String flag;
+    private Integer assets_id;           //资产ID
+    private Integer main_id;             //主类ID
+    private String app_name;            //应用名称
+    private Integer dist_id;             //dist_id
+    private Integer sub_id;              //分类ID
+    private String oper_user;           //oper_user
+    private String update_date;         //更新时间
+    private String ip;                  //ip
+    private Integer flag;                //0=停用 1=启用
 
-    public String getAssets_id() {
+    public Integer getAssets_id() {
         return assets_id;
     }
 
-    public void setAssets_id(String assets_id) {
+    public void setAssets_id(Integer assets_id) {
         this.assets_id = assets_id;
     }
 
-    public String getMain_id() {
+    public Integer getMain_id() {
         return main_id;
     }
 
-    public void setMain_id(String main_id) {
+    public void setMain_id(Integer main_id) {
         this.main_id = main_id;
     }
 
@@ -37,19 +37,19 @@ public class AppInfo implements Serializable {
         this.app_name = app_name;
     }
 
-    public String getDist_id() {
+    public Integer getDist_id() {
         return dist_id;
     }
 
-    public void setDist_id(String dist_id) {
+    public void setDist_id(Integer dist_id) {
         this.dist_id = dist_id;
     }
 
-    public String getSub_id() {
+    public Integer getSub_id() {
         return sub_id;
     }
 
-    public void setSub_id(String sub_id) {
+    public void setSub_id(Integer sub_id) {
         this.sub_id = sub_id;
     }
 
@@ -77,11 +77,11 @@ public class AppInfo implements Serializable {
         this.ip = ip;
     }
 
-    public String getFlag() {
+    public Integer getFlag() {
         return flag;
     }
 
-    public void setFlag(String flag) {
+    public void setFlag(Integer flag) {
         this.flag = flag;
     }
 }

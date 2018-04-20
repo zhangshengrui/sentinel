@@ -4,36 +4,32 @@ import java.io.Serializable;
 
 public class Assets implements Serializable {
 
-    private String id;
-    private String ip;
-    private String ips;
-    private String ipmi_ip;
-    private String name;
-    private String sn;
-    private String gysn;
-    private String idc_id;
-    private String rack;
-    private String os;
-    private String setting;
-    private String settings;
-    private String brand;
-    private String flag;
-    private String virtual;
-    private String manager;
-    private String atype;
-    private String vlan;
-    private String contract_id;
-    private String oper_user;
-    private String update_date;
+    private Integer id;             //必要 资产ID    
+    private String ip;              //必要 管理IP     
+    private String ips;             //     所有IP列表
+    private String ipmi_ip;         //     IPMIIP
+    private String name;            //必要 老资产设备名称  
+    private String gysn;            //必要 光宇编号     
+    private Integer idc_id;         //必要 IDC_ID     
+    private String os;              //必要 操作系统     
+    private String setting;         //必要 真实配置     
+    private Integer flag;           //必要 状态:0=报废, 1=正常, 2=故障, 3=待用 
+    private Integer virtual;        //必要 虚拟机填写对应主机ID              
+    private String manager;         //必要 负责人                              
+    private String atype;           //必要 设备类型 1=服务器;2=交换机;3=存储;4=其它;5=配件;6=云主机  
 
-    private String ass_memo;
-    private String app_memo;
+    private String oper_user;       //必要 操作人
+    private String update_date;     //必要 update_date
 
-    public String getId() {
+    private String app_memo;        //     应用变更备注
+
+    private Integer main_id;        //附加字段
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -69,14 +65,6 @@ public class Assets implements Serializable {
         this.name = name;
     }
 
-    public String getSn() {
-        return sn;
-    }
-
-    public void setSn(String sn) {
-        this.sn = sn;
-    }
-
     public String getGysn() {
         return gysn;
     }
@@ -85,20 +73,12 @@ public class Assets implements Serializable {
         this.gysn = gysn;
     }
 
-    public String getIdc_id() {
+    public Integer getIdc_id() {
         return idc_id;
     }
 
-    public void setIdc_id(String idc_id) {
+    public void setIdc_id(Integer idc_id) {
         this.idc_id = idc_id;
-    }
-
-    public String getRack() {
-        return rack;
-    }
-
-    public void setRack(String rack) {
-        this.rack = rack;
     }
 
     public String getOs() {
@@ -117,35 +97,19 @@ public class Assets implements Serializable {
         this.setting = setting;
     }
 
-    public String getSettings() {
-        return settings;
-    }
-
-    public void setSettings(String settings) {
-        this.settings = settings;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getFlag() {
+    public Integer getFlag() {
         return flag;
     }
 
-    public void setFlag(String flag) {
+    public void setFlag(Integer flag) {
         this.flag = flag;
     }
 
-    public String getVirtual() {
+    public Integer getVirtual() {
         return virtual;
     }
 
-    public void setVirtual(String virtual) {
+    public void setVirtual(Integer virtual) {
         this.virtual = virtual;
     }
 
@@ -165,22 +129,6 @@ public class Assets implements Serializable {
         this.atype = atype;
     }
 
-    public String getVlan() {
-        return vlan;
-    }
-
-    public void setVlan(String vlan) {
-        this.vlan = vlan;
-    }
-
-    public String getContract_id() {
-        return contract_id;
-    }
-
-    public void setContract_id(String contract_id) {
-        this.contract_id = contract_id;
-    }
-
     public String getOper_user() {
         return oper_user;
     }
@@ -197,19 +145,19 @@ public class Assets implements Serializable {
         this.update_date = update_date;
     }
 
-    public String getAss_memo() {
-        return ass_memo;
-    }
-
-    public void setAss_memo(String ass_memo) {
-        this.ass_memo = ass_memo;
-    }
-
     public String getApp_memo() {
         return app_memo;
     }
 
     public void setApp_memo(String app_memo) {
         this.app_memo = app_memo;
+    }
+
+    public Integer getMain_id() {
+        return main_id;
+    }
+
+    public void setMain_id(Integer main_id) {
+        this.main_id = main_id;
     }
 }

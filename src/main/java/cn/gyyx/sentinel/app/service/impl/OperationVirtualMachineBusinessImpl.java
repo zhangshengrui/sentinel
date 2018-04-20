@@ -1,19 +1,25 @@
 package cn.gyyx.sentinel.app.service.impl;
 
+import cn.gyyx.sentinel.app.domain.AppInfo;
+import cn.gyyx.sentinel.app.domain.Assets;
 import cn.gyyx.sentinel.app.mapper.db1.SentinelDBMapper;
 import cn.gyyx.sentinel.app.attestation.AttestationFilter;
 import cn.gyyx.sentinel.app.domain.Attestation;
 import cn.gyyx.sentinel.app.domain.Result;
 import cn.gyyx.sentinel.app.mapper.db2.OperationDBMapper;
 import cn.gyyx.sentinel.app.service.OperationVirtualMachineBusiness;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.sun.org.apache.xerces.internal.dom.PSVIDocumentImpl;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Appinfo;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OperationVirtualMachineBusinessImpl implements OperationVirtualMachineBusiness {
@@ -62,9 +68,51 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
                 return result;
             }
 
+            //检查必要参数
+            List<String> necessary = Arrays.asList("ip","name","gysn","idc_id","os","setting","flag","virtual","manager","atype","oper_user","update_date");
+            necessary.add("main_id");//新增时需要main_id
+            result = checkModel(map.get("param"),necessary);
+
             //插入资产信息
-            result.setCode("400.0");
-            result.setMsg("success");
+            if(!result.getCode().equals("200.0")){
+                return result;
+            }
+            Assets assets = (Assets)result.getData();
+            if(assets == null){
+                result.setCode("401.0");
+                result.setMsg("the system is broken");
+                return result;
+            }
+            Integer i = operationDBMapper.addVirtualAssets(assets);
+            if(i<=0){
+                result.setCode("200.0");
+                result.setMsg("insert into a virtual machine fail");
+                return result;
+            }
+            if(assets.getId() == 0){
+                result.setCode("401.0");
+                result.setMsg("insert into assets table fail");
+                return result;
+            }
+            Integer subId = operationDBMapper.querySubidAppInfo(assets.getMain_id());
+            AppInfo appInfo=new AppInfo();
+            appInfo.setAssets_id(assets.getId());
+            appInfo.setMain_id(assets.getMain_id());
+            appInfo.setApp_name("备机");
+            appInfo.setDist_id(-100);
+            appInfo.setSub_id(subId);
+            appInfo.setOper_user(assets.getOper_user());
+            appInfo.setUpdate_date(assets.getUpdate_date());
+            appInfo.setIp(assets.getIp());
+            appInfo.setFlag(1);
+            Integer i2 = operationDBMapper.addAppInfo(appInfo);
+            if(i2 <= 0){
+                result.setCode("401.0");
+                result.setMsg("insert into app_info table fail");
+                return result;
+            }
+            result.setCode("200.0");
+            result.setMsg("insert into virtual success");
             return result;
         }catch (Exception e){
             logger.error("OperationVirtualMachineBusinessImpl is error");
@@ -75,4 +123,42 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             return result;
         }
     }
+
+
+    public static Result checkModel(String param,List<String> necessary){
+        Result result = new Result();
+        result.setData(null);
+        result.setCode("401.0");
+        try {
+            if (StringUtils.isBlank(param)){
+                result.setCode("403.1");
+                result.setMsg("param is null");
+                return result;
+            }
+            Map<String,String>map = JSON.parseObject(param,new HashMap().getClass());
+            for(String s:necessary){
+                if(!map.containsKey(s)){
+                    result.setCode("403.3");
+                    result.setMsg("necessary param "+s+"is null");
+                    return result;
+                }
+            }
+            Assets assets= JSON.parseObject(param,Assets.class);
+            result.setMsg("200.0");
+            result.setData(assets);
+            return result;
+        }catch (com.alibaba.fastjson.JSONException e1){
+            logger.error("JSON to Object is fail");
+            logger.error(e1);
+            result.setMsg("JSON to Object is fail");
+            return result;
+        }
+        catch (Exception e){
+            logger.error("checkModel is fail");
+            logger.error(e);
+            result.setMsg("the system is broken");
+            return result;
+        }
+    }
+
 }

@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.gyyx.sentinel.app.mapper.db2.OperationDBMapper">
-    <select id="addTest" parameterType="String" >
-        INSERT  INTO `test` SET `name` = #{0}
+    <insert id="addVirtualAssets" useGeneratedKeys="true" keyProperty="id" parameterType="cn.gyyx.sentinel.app.domain.Assets" >
+        INSERT INTO `assets` SET ip =#{ip},ips=#{ips},ipmi_ip=#{ipmi_ip},`name`=#{name},
+        gysn=#{gysn},idc_id=#{idc_id},os=#{os},setting=#{setting},flag=#{flag},virtual=#{virtual},
+        manager=#{manager},atype=#{atype},oper_user=#{oper_user},update_date=#{update_date},app_memo=#{app_memo}
+    </insert>
+
+    <select id="querySubidAppInfo" parameterType="Integer" resultType="Integer">
+        SELECT id FROM sub_category WHERE dist_id=-100 AND main_id=#{0}
     </select>
+
+    <insert id="addAppInfo" parameterType="cn.gyyx.sentinel.app.domain.AppInfo">
+        INSERT INTO `app_info` SET assets_id=#{assets_id},
+        main_id=#{main_id},app_name=#{app_name},dist_id=#{dist_id},sub_id=#{sub_id},
+        oper_user=#{oper_user},update_date=#{update_date},ip=#{ip},flag=#{flag}
+    </insert>
 </mapper>
