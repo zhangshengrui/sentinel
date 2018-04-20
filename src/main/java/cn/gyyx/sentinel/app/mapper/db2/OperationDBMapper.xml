@@ -27,4 +27,7 @@
     <select id="queryAssetsByGysn" parameterType="String" resultType="cn.gyyx.sentinel.app.domain.Assets">
         SELECT  gysn FROM assets WHERE del_info!=0 AND gysn=#{0}
     </select>
+    <update id="deleteVirtualAssets" parameterType="cn.gyyx.sentinel.app.domain.Assets">
+        UPDATE `assets` SET del_info=0,oper_user=#{oper_user},update_date=#{update_date} WHERE gysn=#{gysn} and id=#{id} and virtual > 0
+    </update>
 </mapper>

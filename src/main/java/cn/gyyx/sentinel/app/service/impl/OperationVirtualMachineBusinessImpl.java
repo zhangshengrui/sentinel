@@ -250,4 +250,74 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             return result;
         }
     }
+
+    @Override
+    public Result deleteVirtualMachine(String uri, String path) {
+        Result result =  AttestationFilter.attestation(uri);
+        if(!result.getCode().equals("200.0")){
+            return result;
+        }
+        try {
+            Map<String,String> map = (Map<String, String>) result.getData();
+            result.setData(null);
+            Attestation attestation = new Attestation();
+            attestation.setAuth_id(map.get("auth_id"));
+            List<Attestation> list = operationVirtualMachineMapper.queryAuthInfo(attestation);
+            if(list.size() == 0){
+                result.setMsg("authId is illegal");
+                result.setCode("401.2");
+                return result;
+            }
+            attestation.setApp(map.get("app"));
+            list =operationVirtualMachineMapper.queryAuthInfo(attestation);
+            if(list.size() == 0){
+                result.setCode("401.6");
+                result.setMsg("authId permission denied");
+                return result;
+            }
+            if(list.size() != 1){
+                result.setCode("401.6");
+                result.setMsg("authId recognizable");
+                return result;
+            }
+            String sign = AttestationFilter.md5Encode(map,list.get(0).getAuth_key(),path);
+            if(!sign.equals(map.get("sign"))){
+                result.setCode("401.5");
+                result.setMsg("sign error");
+                return result;
+            }
+
+            //检查必要参数
+            List<String> necessary = new ArrayList<>(Arrays.asList("id","gysn","oper_user","update_date"));
+            result = checkModel(map.get("param"),necessary);
+
+            //删除资产信息
+            if(!result.getCode().equals("200.0")){
+                return result;
+            }
+            Assets assets = (Assets)result.getData();
+            result.setData(null);
+            if(assets == null){
+                result.setCode("401.0");
+                result.setMsg("the system is broken");
+                return result;
+            }
+            Integer i = operationDBMapper.deleteVirtualAssets(assets);
+            if(i <= 0){
+                result.setCode("401.0");
+                result.setMsg("delete assets table fail");
+                return result;
+            }
+            result.setCode("200.0");
+            result.setMsg("delete virtual success");
+            return result;
+        }catch (Exception e){
+            logger.error("OperationVirtualMachineBusinessImpl is error");
+            logger.error(e);
+            result.setData(e);
+            result.setMsg("the system is broken");
+            result.setCode("401.0");
+            return result;
+        }
+    }
 }
