@@ -120,6 +120,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             }
             result.setCode("200.0");
             result.setMsg("insert into virtual success");
+            result.setData("{\"insertId\": \""+assets.getId()+"\"}");
             return result;
         }catch (Exception e){
             logger.error("OperationVirtualMachineBusinessImpl is error");
