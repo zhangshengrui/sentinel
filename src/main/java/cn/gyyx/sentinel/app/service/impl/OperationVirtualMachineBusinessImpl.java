@@ -145,6 +145,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             }
             Map<String,String>map = JSON.parseObject(param,new HashMap().getClass());
             String setting = null;
+            String os = null;
             for(String s:necessary){
                 if(!map.containsKey(s)){
                     result.setCode("403.3");
@@ -154,9 +155,13 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
                 if(s.equals("setting")){
                     setting = URLDecoder.decode(map.get("setting"),"utf-8");
                 }
+                if(s.equals("os")){
+                    os = URLDecoder.decode(map.get("os"),"utf-8");
+                }
             }
             Assets assets= JSON.parseObject(param,Assets.class);
             assets.setSetting(setting);
+            assets.setOs(os);
             result.setCode("200.0");
             result.setMsg("modal is in data");
             result.setData(assets);
@@ -219,7 +224,6 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
 
             //检查必要参数
             List<String> necessary = new ArrayList<>(Arrays.asList("gysn","virtual","ip","ips","flag","app_memo","oper_user","update_date"));
-            necessary.add("id");//编辑时需要id
             result = checkModel(map.get("param"),necessary);
 
             //插入资产信息
