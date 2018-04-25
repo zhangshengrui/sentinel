@@ -1,13 +1,12 @@
 package cn.gyyx.sentinel.app.service.impl;
 
-import cn.gyyx.sentinel.app.domain.AppInfo;
-import cn.gyyx.sentinel.app.domain.Assets;
+import cn.gyyx.sentinel.app.domain.*;
+import cn.gyyx.sentinel.app.mapper.db1.LogInfoDBMapper;
 import cn.gyyx.sentinel.app.mapper.db1.SentinelDBMapper;
 import cn.gyyx.sentinel.app.attestation.AttestationFilter;
-import cn.gyyx.sentinel.app.domain.Attestation;
-import cn.gyyx.sentinel.app.domain.Result;
 import cn.gyyx.sentinel.app.mapper.db2.OperationDBMapper;
 import cn.gyyx.sentinel.app.service.OperationVirtualMachineBusiness;
+import cn.gyyx.sentinel.app.utils.InstantiationLogInfoUtil;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
@@ -29,15 +28,19 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
     @Autowired
     private OperationDBMapper operationDBMapper;
 
+    @Autowired
+    private LogInfoDBMapper logInfoDBMapper;
+
     @Override
     @Transactional
     public Result createVirtualMachine(String uri,String path) {
         Result result =  AttestationFilter.attestation(uri);
+        Assets assets = null;
         if(!result.getCode().equals("200.0")){
             return result;
         }
         try {
-            Map<String,String> map = (Map<String, String>) result.getData();
+            Map<String,String>  map = (Map<String, String>) result.getData();
             result.setData(null);
             Attestation attestation = new Attestation();
             attestation.setAuth_id(map.get("auth_id"));
@@ -75,7 +78,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             if(!result.getCode().equals("200.0")){
                 return result;
             }
-            Assets assets = (Assets)result.getData();
+            assets = (Assets)result.getData();
             result.setData(null);
             if(assets == null){
                 result.setCode("401.0");
@@ -129,6 +132,9 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             result.setMsg("the system is broken");
             result.setData(e);
             return result;
+        }
+        finally {
+            insertLogInfos(assets,uri,1,result);
         }
     }
 
@@ -188,7 +194,8 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
 
     @Override
     public Result updateVirtualMachine(String uri, String path) {
-        Result result =  AttestationFilter.attestation(uri);
+        Result result = AttestationFilter.attestation(uri);
+        Assets assets = null;
         if(!result.getCode().equals("200.0")){
             return result;
         }
@@ -230,7 +237,7 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             if(!result.getCode().equals("200.0")){
                 return result;
             }
-            Assets assets = (Assets)result.getData();
+            assets = (Assets)result.getData();
             result.setData(null);
             if(assets == null){
                 result.setCode("401.0");
@@ -253,12 +260,15 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             result.setCode("401.0");
             result.setData(e);
             return result;
+        }finally {
+            insertLogInfos(assets,uri,3,result);
         }
     }
 
     @Override
     public Result deleteVirtualMachine(String uri, String path) {
         Result result =  AttestationFilter.attestation(uri);
+        Assets assets = null;
         if(!result.getCode().equals("200.0")){
             return result;
         }
@@ -293,14 +303,14 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             }
 
             //检查必要参数
-            List<String> necessary = new ArrayList<>(Arrays.asList("id","gysn","oper_user","update_date"));
+            List<String> necessary = new ArrayList<>(Arrays.asList("gysn","oper_user","update_date"));
             result = checkModel(map.get("param"),necessary);
 
             //删除资产信息
             if(!result.getCode().equals("200.0")){
                 return result;
             }
-            Assets assets = (Assets)result.getData();
+            assets = (Assets)result.getData();
             result.setData(null);
             if(assets == null){
                 result.setCode("401.0");
@@ -323,6 +333,21 @@ public class OperationVirtualMachineBusinessImpl implements OperationVirtualMach
             result.setMsg("the system is broken");
             result.setCode("401.0");
             return result;
+        }
+        finally {
+            insertLogInfos(assets,uri,2,result);
+        }
+    }
+
+    public void insertLogInfos(Assets assets,String uri,Integer type,Result result){
+        try {
+            LogInfo logInfo = InstantiationLogInfoUtil.instantiationLogInfoUtil(assets,uri,type,result);
+            if(logInfo != null){
+                logInfoDBMapper.insertLogInfo(logInfo);
+            }
+        }catch (Exception e){
+            logger.error("insert into logInfo fail");
+            logger.error(e);
         }
     }
 }

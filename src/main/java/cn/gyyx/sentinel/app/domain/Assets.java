@@ -16,7 +16,7 @@ public class Assets implements Serializable {
     private Integer flag;           //必要 状态:0=报废, 1=正常, 2=故障, 3=待用 
     private Integer virtual;        //必要 虚拟机填写对应主机ID              
     private String manager;         //必要 负责人                              
-    private String atype;           //必要 设备类型 1=服务器;2=交换机;3=存储;4=其它;5=配件;6=云主机  
+    private Integer atype;           //必要 设备类型 1=服务器;2=交换机;3=存储;4=其它;5=配件;6=云主机
 
     private String oper_user;       //必要 操作人
     private String update_date;     //必要 update_date
@@ -121,11 +121,11 @@ public class Assets implements Serializable {
         this.manager = manager;
     }
 
-    public String getAtype() {
+    public Integer getAtype() {
         return atype;
     }
 
-    public void setAtype(String atype) {
+    public void setAtype(Integer atype) {
         this.atype = atype;
     }
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gyyx.sentinel.app.mapper.db1.LogInfoDBMapper">
+    <insert id="insertLogInfo" parameterType="cn.gyyx.sentinel.app.domain.LogInfo">
+    INSERT INTO `log_info` SET oper_user=#{oper_user},update_date=#{update_date},type=#{type},
+    ip=#{ip},virtual=#{virtual},gysn=#{gysn},idc_id=#{idc_id},atype=#{atype},request=#{request},response=#{response}
+    </insert>
+</mapper>
