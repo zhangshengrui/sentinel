@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gyyx.sentinel.app.mapper.db2.QueryDBMapper">
+    <select id="queryVirtualIdByGysn" parameterType="String" resultType="Integer">
+        SELECT id,ip,gysn FROM `assets` WHERE VIRTUAL = -1 AND ip != '' AND del_info = 1 AND flag = 1 AND atype = 1 AND gysn = #{0}
+    </select>
+</mapper>
